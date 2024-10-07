@@ -1,0 +1,38 @@
+- hosts: vdi
+  become: yes
+  tasks:
+    - name: Instalar Nginx
+      dnf:
+        name: nginx
+        state: present
+
+    - name: Iniciar Nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Crear una página de índice HTML
+      copy:
+        dest: /usr/share/nginx/html/index.html
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>Hola Mundo</title>
+          </head>
+          <body>
+              <h1>¡Hola, Mundo!</h1>
+              <p>Esta es una página servida por Nginx utilizando Ansible.</p>
+          </body>
+          </html>
+
+    - name: Asegurarse de que el firewall permite tráfico HTTP
+      firewalld:
+        service: http
+        permanent: yes
+        state: enabled
+
+    - name: Recargar el firewall
+      firewalld:
+        state: reloaded
